@@ -37,14 +37,10 @@ public class PostService {
     public List<TrendingPostPreviewResponse> getTrendingPostPreviews() {
         String cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
 
-        if (cachedJson != null) { return List.of(); }
+        if (cachedJson == null || cachedJson.isBlank()) { return List.of(); }
         return objectMapper.readValue(
                 cachedJson,
-                objectMapper.getTypeFactory()
-                        .constructCollectionType(
-                                List.class,
-                                TrendingPostPreviewResponse.class
-                        )
+                objectMapper.getTypeFactory().constructCollectionType(List.class, TrendingPostPreviewResponse.class)
         );
     }
 
