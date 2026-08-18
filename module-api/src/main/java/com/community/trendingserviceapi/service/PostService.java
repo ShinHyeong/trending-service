@@ -24,6 +24,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
+    private final PostViewBufferPublisher postViewBufferPublisher;
+    private final PostLikeBufferPublisher postLikeBufferPublisher;
 
     private static final int TRENDING_POST_LIMIT = 10;
     private static final String TRENDING_POSTS_CACHE_KEY = "trending:posts";
@@ -46,10 +48,12 @@ public class PostService {
 
     // 게시글 상세 조회 API
     public PostDetailResponse getPost(Long postId, Long userId) {
-        //조회수 처리 - SQS로 메세지 전송
-        //사용자에게는 게시글 상세정보 리턴
-        return postRepository.findPostDetailById(postId)
+        PostDetailResponse response = postRepository.findPostDetailById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
+
+        postViewBufferPublisher.enqueue(postId, userId);
+
+        return response;
     }
 
     // 게시글 생성 API
