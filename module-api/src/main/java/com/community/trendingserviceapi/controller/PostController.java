@@ -3,6 +3,7 @@ package com.community.trendingserviceapi.controller;
 import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
 import com.community.trendingserviceapi.dto.post.response.PostDetailResponse;
 import com.community.trendingserviceapi.dto.post.request.PostUpdateRequest;
+import com.community.trendingserviceapi.dto.post.response.PostLikeResponse;
 import com.community.trendingserviceapi.dto.post.response.TrendingPostPreviewResponse;
 import com.community.trendingserviceapi.service.PostService;
 import jakarta.validation.Valid;
@@ -55,17 +56,17 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<Void> likePost(@PathVariable("postId") Long postId,
+    public ResponseEntity<PostLikeResponse> likePost(@PathVariable("postId") Long postId,
                                          @RequestHeader("X-User-Id") Long userId) {
-        postService.likePost(postId, userId);
-        return ResponseEntity.noContent().build();
+        boolean isChanged = postService.likePost(postId, userId);
+        return ResponseEntity.ok(new PostLikeResponse(postId, true, isChanged));
     }
 
-    @PostMapping("/{postId}/unlike")
-    public ResponseEntity<Void> unlikePost(@PathVariable("postId") Long postId,
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<PostLikeResponse> unlikePost(@PathVariable("postId") Long postId,
                                            @RequestHeader("X-User-Id") Long userId) {
-        postService.unlikePost(postId, userId);
-        return ResponseEntity.noContent().build();
+        boolean isChanged = postService.unlikePost(postId, userId);
+        return ResponseEntity.ok(new PostLikeResponse(postId, false, isChanged));
     }
 
 }

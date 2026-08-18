@@ -1,5 +1,6 @@
 package com.community.trendingserviceapi.service;
 
+import com.community.trendingserviceapi.domain.PostLikeJdbcRepository;
 import com.community.trendingserviceapi.domain.post.Post;
 import com.community.trendingserviceapi.domain.post.PostRepository;
 import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final PostLikeJdbcRepository postLikeRepository;
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final PostViewBufferPublisher postViewBufferPublisher;
@@ -87,13 +89,21 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public void likePost(Long postId, Long userId) {
-        //SQS 서버에게 메세지 발행
+    public boolean likePost(Long postId, Long userId) {
+        if (postLikeRepository.insertLike(postId, userId) == 0) {
+            return false;   // 이미 누름 — 큐에 안 보냄
+        }
+        postLikeBufferPublisher.enqueue(postId, +1);
+        return true;
     }
 
     // 게시글 좋아요 삭제 API
-    public void unlikePost(Long postId, Long userId) {
-        //SQS 서버에게 메세지 발행
+    public boolean unlikePost(Long postId, Long userId) {
+        if (postLikeRepository.deleteLike(postId, userId) == 0) {
+            return false;   // 애초에 안 누름
+        }
+        postLikeBufferPublisher.enqueue(postId, -1);
+        return true;
     }
 
 
