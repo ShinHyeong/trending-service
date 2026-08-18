@@ -1,0 +1,11 @@
+CREATE TABLE post (
+	post_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	user_id BIGINT,
+	title VARCHAR(50) NOT NULL,
+	content MEDIUMTEXT,
+	view_count INT DEFAULT 0,
+	like_count INT DEFAULT 0,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	INDEX idx_created_at (created_at)
+);

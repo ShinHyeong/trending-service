@@ -1,0 +1,4 @@
+CREATE TABLE account (
+    user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nickname VARCHAR(50) NOT NULL
+);
