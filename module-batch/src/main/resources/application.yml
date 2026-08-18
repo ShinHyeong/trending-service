@@ -12,8 +12,8 @@ spring:
     password: ${TRENDING_DB_PASSWORD}
     hikari:
       pool-name: BatchHikariPool
-      maximum-pool-size: 10
-      minimum-idle: 10
+      maximum-pool-size: 10 #부하테스트하면서 늘릴 예정
+      minimum-idle: 5
 
   jpa:
     hibernate:

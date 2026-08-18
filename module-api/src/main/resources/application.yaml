@@ -10,6 +10,10 @@ spring:
     url: jdbc:mysql://${TRENDING_DB_HOST}:3310/${TRENDING_DB_NAME}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${TRENDING_DB_USERNAME}
     password: ${TRENDING_DB_PASSWORD}
+    hikari:
+      pool-name: ApiHikariPool
+      maximum-pool-size: 30 #부하테스트하면서 늘릴 예정
+      minimum-idle: 10
 
   jpa:
     hibernate:
