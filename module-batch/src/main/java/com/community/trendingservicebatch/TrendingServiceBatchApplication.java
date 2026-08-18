@@ -1,4 +1,4 @@
-package com.community.batch;
+package com.community.trendingservicebatch;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

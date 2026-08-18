@@ -26,7 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<TrendingPostProjection> findTrendingPosts(@Param("n") int n);
 
     @Query("""
-    SELECT new com.community.trendingservice.dto.TrendingPostPreviewResponse(
+    SELECT new com.community.trendingserviceapi.dto.post.response.TrendingPostPreviewResponse(
     p.postId, a.nickname, p.title, 
     SUBSTRING(p.content, 1, 100), p.likeCount, p.viewCount, p.createdAt
     )
@@ -37,7 +37,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<TrendingPostPreviewResponse> findTrendingPostPreviews(@Param("postIds") List<Long> postIds);
 
     @Query("""
-    SELECT new com.community.trendingservice.dto.PostDetailResponse(
+    SELECT new com.community.trendingserviceapi.dto.post.response.PostDetailResponse(
     p.postId, a.nickname, p.title, 
     p.content, p.likeCount, p.viewCount, p.createdAt
     )
