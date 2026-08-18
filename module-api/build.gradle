@@ -1,0 +1,34 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+group = 'com.community'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Web & JPA
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Redis (캐시)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // AWS SQS (Producer)
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
+
+    // 로컬 개발 편의 (Docker Compose 자동 기동 지원)
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}

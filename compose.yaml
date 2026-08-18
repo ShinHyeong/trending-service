@@ -1,0 +1,51 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    container_name: trending-db
+    ports:
+      - '3310:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${TRENDING_DB_NAME}
+      MYSQL_USER: ${TRENDING_DB_USERNAME}
+      MYSQL_PASSWORD: ${TRENDING_DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/user-init.sql:/docker-entrypoint-initdb.d/01-init-user.sql
+      - ./db/post-init.sql:/docker-entrypoint-initdb.d/02-init-post.sql
+      - ./db/post_like-init.sql:/docker-entrypoint-initdb.d/03-init-post_like.sql
+      - ./db/post_view-init.sql:/docker-entrypoint-initdb.d/04-init-post_view.sql
+    command:
+      # 한글 깨짐 방지
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+
+  elasticmq:
+    image: softwaremill/elasticmq-native:latest
+    container_name: local-elasticmq
+    restart: always
+    ports:
+      - "9324:9324" # SQS API 포트
+      - "9325:9325" # UI 모니터링 콘솔 포트
+    volumes:
+      - ./elasticmq.conf:/opt/elasticmq.conf
+
+  redis:
+    image: 'redis:latest'
+    container_name: trending-redis
+    ports:
+      - '6380:6379'
+    volumes:
+      - redis_data:/data
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: local-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  mysql_data:
+  redis_data:
