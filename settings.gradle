@@ -1,4 +1,5 @@
 rootProject.name = 'trending-service'
 
+include 'module-core'
 include 'module-api'
 include 'module-batch'
