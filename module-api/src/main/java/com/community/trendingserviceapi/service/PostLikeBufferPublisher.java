@@ -2,8 +2,6 @@ package com.community.trendingserviceapi.service;
 
 import com.community.trendingservicecore.dto.post.event.PostLikeBatchMessage;
 import com.community.trendingservicecore.dto.post.event.PostLikeEvent;
-import com.community.trendingservicecore.dto.post.event.PostViewBatchMessage;
-import com.community.trendingservicecore.dto.post.event.PostViewEvent;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +49,7 @@ public class PostLikeBufferPublisher {
 
         List<PostLikeEvent> batchEvents = new ArrayList<>();
         PostLikeEvent event;
-        while ((event = eventQueue.poll()) != null && batchEvents.size() < BATCH_SIZE) {
+        while (batchEvents.size() < BATCH_SIZE & (event = eventQueue.poll()) != null) {
             batchEvents.add(event);
             queueSize.decrementAndGet();
         }

@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class PostViewBufferPublisher {
 
         List<PostViewEvent> batchEvents = new ArrayList<>();
         PostViewEvent event;
-        while ((event = eventQueue.poll()) != null && batchEvents.size() < BATCH_SIZE) {
+        while (batchEvents.size() < BATCH_SIZE && (event = eventQueue.poll()) != null) {
             batchEvents.add(event);
             queueSize.decrementAndGet();
         }
