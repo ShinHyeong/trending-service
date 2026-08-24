@@ -1,4 +1,4 @@
-package com.community.trendingserviceapi.domain;
+package com.community.trendingserviceapi.domain.post;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
