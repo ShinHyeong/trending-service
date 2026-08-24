@@ -26,7 +26,6 @@ services:
     restart: always
     ports:
       - "9324:9324" # SQS API 포트
-      - "9325:9325" # UI 모니터링 콘솔 포트
     volumes:
       - ./elasticmq.conf:/opt/elasticmq.conf
 
