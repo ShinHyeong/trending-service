@@ -50,6 +50,6 @@ management:
       hikaricp: true # HikariCP 커넥션 풀 메트릭 활성화
 
 app:
-  sqs:
+  queue:
     view-count: post-view-queue
     like-count: post-like-queue
