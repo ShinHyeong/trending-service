@@ -22,7 +22,6 @@ public class ViewCountService {
     private final PostViewJdbcRepository postViewRepository;
     private final PostJdbcRepository postRepository;
 
-    @Scheduled(cron = "0 */1 * * * *")
     @Transactional
     public void applyViewCounts(List<PostViewEvent> events) {
         if (events == null || events.isEmpty()) return;
