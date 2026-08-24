@@ -21,7 +21,7 @@ public class PostViewJdbcRepository {
                 .map(u -> "(?,?)")
                 .collect(Collectors.joining(","));
 
-        return jdbcTemplate.update(
+        return jdbcTemplate.update( //실제로 쿼리가 성공한 행의 개수
                 "INSERT IGNORE INTO post_view (post_id, user_id) VALUES " + placeholders,
                 ps -> {
                     int i = 1;

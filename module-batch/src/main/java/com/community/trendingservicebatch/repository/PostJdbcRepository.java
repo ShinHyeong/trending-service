@@ -30,8 +30,7 @@ public class PostJdbcRepository {
                 .map(e -> new Object[]{ e.getValue(), e.getKey() })
                 .toList();
 
-        // GREATEST: 델타 유실로 드리프트가 생겨도 음수 좋아요 수는 화면에 안 나가게
         jdbcTemplate.batchUpdate(
-                "UPDATE post SET like_count = GREATEST(like_count + ?, 0) WHERE post_id = ?", args);
+                "UPDATE post SET like_count = like_count + ? WHERE post_id = ?", args);
     }
 }

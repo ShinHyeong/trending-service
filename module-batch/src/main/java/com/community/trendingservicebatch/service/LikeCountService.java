@@ -29,9 +29,9 @@ public class LikeCountService {
                 .collect(Collectors.groupingBy(
                         PostLikeEvent::postId,
                         TreeMap::new,
-                        Collectors.summingInt(PostLikeEvent::delta)));
+                        Collectors.summingInt(PostLikeEvent::delta))); //눌렀다가 다시 취소하는 경우를 세기 위해
 
-        deltas.values().removeIf(d -> d == 0);   // 눌렀다 취소 → 합 0 → UPDATE 스킵
+        deltas.values().removeIf(d -> d == 0); // UPDATE문 최적화: 눌렀다가 다시 취소하면 합이 0이 됨 → UPDATE 스킵
         postRepository.increaseLikeCounts(deltas);
     }
 }
