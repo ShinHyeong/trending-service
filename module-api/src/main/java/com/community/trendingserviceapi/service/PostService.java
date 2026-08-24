@@ -1,6 +1,6 @@
 package com.community.trendingserviceapi.service;
 
-import com.community.trendingserviceapi.domain.PostLikeJdbcRepository;
+import com.community.trendingserviceapi.domain.post.PostLikeJdbcRepository;
 import com.community.trendingserviceapi.domain.post.Post;
 import com.community.trendingserviceapi.domain.post.PostRepository;
 import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
@@ -54,7 +54,15 @@ public class PostService {
     public List<TrendingPostPreviewResponse> getTrendingPostPreviews() {
         String cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
 
-        if (cachedJson == null || cachedJson.isBlank()) { return List.of(); }
+        if (cachedJson == null || cachedJson.isBlank()) {
+            //서버 재시작 후에 다시 5분단위 스케줄러 기다리는거 방지
+            updateTrendingPostPreviews();
+            cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
+
+            if (cachedJson == null || cachedJson.isBlank()) {
+                return List.of();
+            }
+        }
         return objectMapper.readValue(
                 cachedJson,
                 objectMapper.getTypeFactory().constructCollectionType(List.class, TrendingPostPreviewResponse.class)
@@ -71,12 +79,10 @@ public class PostService {
         return response;
     }
 
-    // 게시글 생성 API
     public void createPost(Long userId, PostCreateRequest request) {
         postRepository.save(new Post(userId, request));
     }
 
-    // 게시글 수정 API
     @Transactional
     public void updatePost(Long postId, Long userId, PostUpdateRequest request) {
         Post post =  postRepository.findById(postId)
@@ -89,7 +95,6 @@ public class PostService {
         post.update(request);
     }
 
-    // 게시글 삭제 API
     @Transactional
     public void deletePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
@@ -103,39 +108,19 @@ public class PostService {
     }
 
     public boolean likePost(Long postId, Long userId) {
-        if (postLikeRepository.insertLike(postId, userId) == 0) {
-            return false;   // 이미 누름 — 큐에 안 보냄
+        if (postLikeRepository.insertLike(postId, userId) == 0) { //INSERT문 요청은 바로 DB에 반영하지만
+            return false;   // 이미 누름 (이력 O) — 큐에 안 보냄
         }
-        postLikeBufferPublisher.enqueue(postId, +1);
+        postLikeBufferPublisher.enqueue(postId, +1); //UPDATE문 요청은 큐에 보낸다.(정확한 post.like_count값은 나중에 천천히 업데이트)
         return true;
     }
 
-    // 게시글 좋아요 삭제 API
     public boolean unlikePost(Long postId, Long userId) {
         if (postLikeRepository.deleteLike(postId, userId) == 0) {
-            return false;   // 애초에 안 누름
+            return false;   // 애초에 안 누름 (이력 X)
         }
         postLikeBufferPublisher.enqueue(postId, -1);
         return true;
-    }
-
-
-    // 인기글 목록 갱신 API : 갱신하고 캐시에 올려둠
-    @Scheduled(cron = "0 */5 * * * *")
-    @Transactional(readOnly = true)
-    private void updateTrendingPostPreviews() {
-        List<Long> postIds = getTrendingPostIds(TRENDING_POST_LIMIT);
-
-        // 3시간 내 작성된 게시글이 없는 경우 : 빈 배열을 캐싱하고 종료
-        if (postIds.isEmpty()) {
-            redisTemplate.opsForValue().set(TRENDING_POSTS_CACHE_KEY, "[]", CACHE_TTL);
-            return;
-        }
-
-        List<TrendingPostPreviewResponse> previews = postRepository.findTrendingPostPreviews(postIds);
-
-        String jsonString = objectMapper.writeValueAsString(previews);
-        redisTemplate.opsForValue().set(TRENDING_POSTS_CACHE_KEY, jsonString, CACHE_TTL);
     }
 
     private List<Long> getTrendingPostIds(int limit) {
