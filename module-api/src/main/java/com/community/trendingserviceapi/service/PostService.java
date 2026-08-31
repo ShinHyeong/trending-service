@@ -6,7 +6,7 @@ import com.community.trendingserviceapi.domain.post.PostRepository;
 import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
 import com.community.trendingserviceapi.dto.post.request.PostUpdateRequest;
 import com.community.trendingserviceapi.dto.post.response.PostDetailResponse;
-import com.community.trendingserviceapi.dto.post.response.TrendingPostPreviewResponse;
+import com.community.trendingserviceapi.dto.post.response.TrendingPostResponse;
 import com.community.trendingserviceapi.exception.PostAccessDeniedException;
 import com.community.trendingserviceapi.exception.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class PostService {
     // 인기글 목록 갱신 API : 갱신하고 캐시에 올려둠
     @Scheduled(cron = "0 */5 * * * *")
     @Transactional(readOnly = true)
-    public void updateTrendingPostPreviews() {
+    public void updateTrendingPosts() {
         List<Long> postIds = getTrendingPostIds(TRENDING_POST_LIMIT);
 
         // 3시간 내 작성된 게시글이 없는 경우 : 빈 배열을 캐싱하고 종료
@@ -45,18 +45,18 @@ public class PostService {
             return;
         }
 
-        List<TrendingPostPreviewResponse> previews = postRepository.findTrendingPostPreviews(postIds);
+        List<TrendingPostResponse> previews = postRepository.findTrendingPostPreviews(postIds);
 
         String jsonString = objectMapper.writeValueAsString(previews);
         redisTemplate.opsForValue().set(TRENDING_POSTS_CACHE_KEY, jsonString, CACHE_TTL);
     }
 
-    public List<TrendingPostPreviewResponse> getTrendingPostPreviews() {
+    public List<TrendingPostResponse> getTrendingPosts() {
         String cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
 
         if (cachedJson == null || cachedJson.isBlank()) {
             //서버 재시작 후에 다시 5분단위 스케줄러 기다리는거 방지
-            updateTrendingPostPreviews();
+            updateTrendingPosts();
             cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
 
             if (cachedJson == null || cachedJson.isBlank()) {
@@ -65,7 +65,7 @@ public class PostService {
         }
         return objectMapper.readValue(
                 cachedJson,
-                objectMapper.getTypeFactory().constructCollectionType(List.class, TrendingPostPreviewResponse.class)
+                objectMapper.getTypeFactory().constructCollectionType(List.class, TrendingPostResponse.class)
         );
     }
 

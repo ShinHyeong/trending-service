@@ -1,7 +1,7 @@
 package com.community.trendingserviceapi.domain.post;
 
 import com.community.trendingserviceapi.dto.post.response.PostDetailResponse;
-import com.community.trendingserviceapi.dto.post.response.TrendingPostPreviewResponse;
+import com.community.trendingserviceapi.dto.post.response.TrendingPostResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +23,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Long> findTrendingPostIds(@Param("limit") int limit);
 
     @Query("""
-    SELECT new com.community.trendingserviceapi.dto.post.response.TrendingPostPreviewResponse(
+    SELECT new com.community.trendingserviceapi.dto.post.response.TrendingPostResponse(
     p.postId, a.nickname, p.title, 
     SUBSTRING(p.content, 1, 100), p.likeCount, p.viewCount, p.createdAt
     )
@@ -31,7 +31,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     JOIN Account a ON p.userId = a.userId
     WHERE p.postId IN :postIds
     """)
-    List<TrendingPostPreviewResponse> findTrendingPostPreviews(@Param("postIds") List<Long> postIds);
+    List<TrendingPostResponse> findTrendingPostPreviews(@Param("postIds") List<Long> postIds);
 
     @Query("""
     SELECT new com.community.trendingserviceapi.dto.post.response.PostDetailResponse(
