@@ -1,22 +1,24 @@
 package com.community.trendingserviceapi.exception;
 
-import org.springframework.http.HttpStatus;
+import com.community.trendingserviceapi.dto.post.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = { PostNotFoundException.class })
-    public ResponseEntity<String> handleNotFound(Exception e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(BusinessException e) {
+        return ResponseEntity.status(e.httpStatus())
+                .body(ApiResponse.fail(e.getStatusCode()));
     }
 
-    // 403 Forbidden 예외 처리 추가
-    @ExceptionHandler(PostAccessDeniedException.class)
-    public ResponseEntity<String> handleAccessDenied(PostAccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(MethodArgumentNotValidException e) {
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.fail(StatusCode.INVALID_INPUT));
     }
 
 }
