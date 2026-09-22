@@ -289,8 +289,8 @@ erDiagram
         BIGINT user_id "작성자"
         VARCHAR title
         MEDIUMTEXT content
-        INT view_count "비정규화 카운터"
-        INT like_count "비정규화 카운터"
+        INT view_count "반정규화 카운터"
+        INT like_count "반정규화 카운터"
         DATETIME created_at "idx_created_at"
         DATETIME updated_at
     }
