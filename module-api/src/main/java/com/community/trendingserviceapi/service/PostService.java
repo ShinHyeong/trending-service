@@ -29,26 +29,14 @@ public class PostService {
     private final PostViewBufferPublisher postViewBufferPublisher;
     private final PostLikeBufferPublisher postLikeBufferPublisher;
 
-    private static final int TRENDING_POST_LIMIT = 10;
-    private static final String TRENDING_POSTS_CACHE_KEY = "trending:posts";
-    private static final Duration CACHE_TTL = Duration.ofMinutes(10); // 스케줄러 주기(5분)보다 길게 설정하여 캐시 공백 방지
+    public String getTrendingCacheJson() {
+        return trendingPostCacheRepository.findJson()
+                .orElseGet(trendingPostCacheRefresher::refresh);
+    }
 
-    // 인기글 목록 갱신 API : 갱신하고 캐시에 올려둠
-    @Scheduled(cron = "0 */5 * * * *")
     @Transactional(readOnly = true)
-    public void updateTrendingPosts() {
-        List<Long> postIds = getTrendingPostIds(TRENDING_POST_LIMIT);
-
-        // 3시간 내 작성된 게시글이 없는 경우 : 빈 배열을 캐싱하고 종료
-        if (postIds.isEmpty()) {
-            redisTemplate.opsForValue().set(TRENDING_POSTS_CACHE_KEY, "[]", CACHE_TTL);
-            return;
-        }
-
-        List<TrendingPostResponse> previews = postRepository.findTrendingPostPreviews(postIds);
-
-        String jsonString = objectMapper.writeValueAsString(previews);
-        redisTemplate.opsForValue().set(TRENDING_POSTS_CACHE_KEY, jsonString, CACHE_TTL);
+    public PostWithAccount getPost(Long postId) {
+        return postAccountService.getPostWithAccount(postId);
     }
 
     public List<TrendingPostResponse> getTrendingPosts() {
@@ -80,7 +68,7 @@ public class PostService {
     }
 
     public void createPost(Long userId, PostCreateRequest request) {
-        postRepository.save(new Post(userId, request));
+        postRepository.save(new Post(userId, request.title(), request.content()));
     }
 
     @Transactional
@@ -92,7 +80,7 @@ public class PostService {
             throw new PostAccessDeniedException(postId, userId);
         }
 
-        post.update(request);
+        post.update(request.title(), request.content());
     }
 
     @Transactional

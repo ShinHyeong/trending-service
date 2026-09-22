@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -22,25 +21,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     nativeQuery = true)
     List<Long> findTrendingPostIds(@Param("limit") int limit);
 
-    @Query("""
-    SELECT new com.community.trendingserviceapi.dto.post.response.TrendingPostResponse(
-    p.postId, a.nickname, p.title, 
-    SUBSTRING(p.content, 1, 100), p.likeCount, p.viewCount, p.createdAt
-    )
-    FROM Post p
-    JOIN Account a ON p.userId = a.userId
-    WHERE p.postId IN :postIds
-    """)
-    List<TrendingPostResponse> findTrendingPostPreviews(@Param("postIds") List<Long> postIds);
-
-    @Query("""
-    SELECT new com.community.trendingserviceapi.dto.post.response.PostDetailResponse(
-    p.postId, a.nickname, p.title, 
-    p.content, p.likeCount, p.viewCount, p.createdAt
-    )
-    FROM Post p
-    JOIN Account a ON p.userId = a.userId
-    WHERE p.postId = :postId
-    """)
-    Optional<PostDetailResponse> findPostDetailById(@Param("postId") Long postId);
 }

@@ -40,13 +40,22 @@ public class PostController {
                                                       @RequestHeader("X-User-Id") Long userId) {
         PostDetailResponse body = postService.getPost(postId, userId);
         return ResponseEntity.ok(ApiResponse.success(body));
+    public ResponseEntity<ApiResponse<PostDetailResponse>> getPost(@PathVariable("postId") Long postId) {
+        PostWithAccount pa = postService.getPost(postId);
+        PostDetailResponse body = PostDetailResponse.from(pa);
+
+        return ResponseEntity.ok(ApiResponse.success(body));
+    }
+
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> createPost(@RequestHeader("X-User-Id") Long userId,
                                            @RequestBody @Valid PostCreateRequest request) {
         postService.createPost(userId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created());
     }
 
     @PutMapping("/{postId}")
@@ -54,6 +63,7 @@ public class PostController {
                                            @RequestHeader("X-User-Id") Long userId,
                                            @RequestBody @Valid PostUpdateRequest request) {
         postService.updatePost(postId, userId, request);
+
         return ResponseEntity.ok(ApiResponse.success());
     }
 
@@ -61,6 +71,7 @@ public class PostController {
     public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable("postId") Long postId,
                                            @RequestHeader("X-User-Id") Long userId) {
         postService.deletePost(postId, userId);
+
         return ResponseEntity.ok(ApiResponse.success());
     }
 
@@ -68,14 +79,20 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostLikeResponse>> likePost(@PathVariable("postId") Long postId,
                                          @RequestHeader("X-User-Id") Long userId) {
         boolean isChanged = postService.likePost(postId, userId);
-        return ResponseEntity.ok(ApiResponse.success(new PostLikeResponse(postId, true, isChanged)));
+
+        PostLikeResponse body = new PostLikeResponse(postId, true, isChanged);
+
+        return ResponseEntity.ok(ApiResponse.success(body));
     }
 
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<ApiResponse<PostLikeResponse>> unlikePost(@PathVariable("postId") Long postId,
                                            @RequestHeader("X-User-Id") Long userId) {
         boolean isChanged = postService.unlikePost(postId, userId);
-        return ResponseEntity.ok(ApiResponse.success(new PostLikeResponse(postId, false, isChanged)));
+
+        PostLikeResponse body = new PostLikeResponse(postId, false, isChanged);
+
+        return ResponseEntity.ok(ApiResponse.success(body));
     }
 
 }
