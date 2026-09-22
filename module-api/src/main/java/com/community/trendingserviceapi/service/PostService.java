@@ -24,10 +24,11 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
     private final PostLikeJdbcRepository postLikeRepository;
-    private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper;
+    private final TrendingPostCacheRepository trendingPostCacheRepository;
+    private final TrendingPostCacheRefresher trendingPostCacheRefresher;
     private final PostViewBufferPublisher postViewBufferPublisher;
     private final PostLikeBufferPublisher postLikeBufferPublisher;
+    private final PostAccountService postAccountService;
 
     public String getTrendingCacheJson() {
         return trendingPostCacheRepository.findJson()
@@ -109,9 +110,5 @@ public class PostService {
         }
         postLikeBufferPublisher.enqueue(postId, -1);
         return true;
-    }
-
-    private List<Long> getTrendingPostIds(int limit) {
-        return postRepository.findTrendingPostIds(limit);
     }
 }

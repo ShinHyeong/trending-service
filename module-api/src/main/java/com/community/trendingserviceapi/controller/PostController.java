@@ -23,13 +23,9 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/trending")
-    public ResponseEntity<ApiResponse<List<TrendingPostResponse>>> getTrendingPosts() {
-        List<Post> posts = postService.getTrendingPosts();
-
-        List<Long> userIds = posts.stream().map(Post::getUserId).distinct().toList();
-
-        List<TrendingPostResponse> body = postService.getTrendingPosts();
-
+    public ResponseEntity<ApiResponse<RawValue>> getTrendingPosts() {
+        // data에 Redis에 캐싱된 값 그대로 리턴 : Jackson은 RawValue를 만나면 파싱하지 않고 문자열을 그대로 넣음
+        RawValue body = new RawValue(postService.getTrendingCacheJson());
         return ResponseEntity.ok(ApiResponse.success(body));
     }
 
