@@ -1,23 +1,16 @@
 package com.community.trendingserviceapi.service;
 
-import com.community.trendingserviceapi.domain.post.PostLikeJdbcRepository;
+import com.community.trendingserviceapi.domain.PostWithAccount;
 import com.community.trendingserviceapi.domain.post.Post;
+import com.community.trendingserviceapi.domain.post.PostLikeJdbcRepository;
 import com.community.trendingserviceapi.domain.post.PostRepository;
 import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
 import com.community.trendingserviceapi.dto.post.request.PostUpdateRequest;
-import com.community.trendingserviceapi.dto.post.response.PostDetailResponse;
-import com.community.trendingserviceapi.dto.post.response.TrendingPostResponse;
 import com.community.trendingserviceapi.exception.PostAccessDeniedException;
 import com.community.trendingserviceapi.exception.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.databind.ObjectMapper;
-
-import java.time.Duration;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,32 +33,9 @@ public class PostService {
         return postAccountService.getPostWithAccount(postId);
     }
 
-    public List<TrendingPostResponse> getTrendingPosts() {
-        String cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
-
-        if (cachedJson == null || cachedJson.isBlank()) {
-            //서버 재시작 후에 다시 5분단위 스케줄러 기다리는거 방지
-            updateTrendingPosts();
-            cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
-
-            if (cachedJson == null || cachedJson.isBlank()) {
-                return List.of();
-            }
-        }
-        return objectMapper.readValue(
-                cachedJson,
-                objectMapper.getTypeFactory().constructCollectionType(List.class, TrendingPostResponse.class)
-        );
-    }
-
-    // 게시글 상세 조회 API
-    public PostDetailResponse getPost(Long postId, Long userId) {
-        PostDetailResponse response = postRepository.findPostDetailById(postId)
-                .orElseThrow(() -> new PostNotFoundException(postId));
-
+    // 게시글 조회수 기록 API
+    public void recordViews (Long postId, Long userId) {
         postViewBufferPublisher.enqueue(postId, userId);
-
-        return response;
     }
 
     public void createPost(Long userId, PostCreateRequest request) {

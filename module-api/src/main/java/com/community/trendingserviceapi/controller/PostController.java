@@ -28,12 +28,6 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostDetailResponse>> getPost(@PathVariable("postId") Long postId,
-                        //post_view 테이블에 INSERT(postId, userId) 작업하려면 필요한 정보라서 꼭 넣어야함
-  // 인증 기능 개발 X, 부하 테스트와 성능 튜닝에 집중하고 싶어서, 부하테스트 툴이 userId값을 HTTP 헤더에 직접 꽂게 함
-                                                      @RequestHeader("X-User-Id") Long userId) {
-        PostDetailResponse body = postService.getPost(postId, userId);
-        return ResponseEntity.ok(ApiResponse.success(body));
     public ResponseEntity<ApiResponse<PostDetailResponse>> getPost(@PathVariable("postId") Long postId) {
         PostWithAccount pa = postService.getPost(postId);
         PostDetailResponse body = PostDetailResponse.from(pa);
@@ -41,6 +35,15 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(body));
     }
 
+    @PostMapping("/{postId}/views")
+    public ResponseEntity<ApiResponse<Void>> recordViews(@PathVariable("postId") Long postId,
+                         //post_view 테이블에 INSERT(postId, userId) 작업하려면 필요한 정보라서 꼭 넣어야함
+     // 인증 기능 개발 X, 부하 테스트와 성능 튜닝에 집중하고 싶어서, 부하테스트 툴이 userId값을 HTTP 헤더에 직접 꽂게 함
+                                                         @RequestHeader("X-User-Id") Long userId) {
+        postService.recordViews(postId, userId);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(ApiResponse.accepted());
     }
 
     @PostMapping
