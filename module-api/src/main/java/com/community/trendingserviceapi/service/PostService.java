@@ -93,7 +93,7 @@ public class PostService {
             throw new PostAccessDeniedException(postId, userId);
         }
 
-        postRepository.deleteById(postId);
+        postRepository.delete(post);
     }
 
     public boolean likePost(Long postId, Long userId) {
