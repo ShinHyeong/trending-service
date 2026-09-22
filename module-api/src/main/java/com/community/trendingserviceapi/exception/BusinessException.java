@@ -1,5 +1,6 @@
 package com.community.trendingserviceapi.exception;
 
+import com.community.trendingserviceapi.dto.global.response.StatusCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

@@ -1,4 +1,4 @@
-package com.community.trendingserviceapi.exception;
+package com.community.trendingserviceapi.dto.global.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 public enum StatusCode {
     SUCCESS(2000, "요청에 성공했습니다"),
     CREATED(2010, "생성되었습니다"),
+    ACCEPTED(2020, "요청이 접수되었습니다"),
 
     INVALID_INPUT(4000, "잘못된 요청입니다."),
     POST_ACCESS_DENIED(4030, "게시글에 대한 권한이 없습니다."),

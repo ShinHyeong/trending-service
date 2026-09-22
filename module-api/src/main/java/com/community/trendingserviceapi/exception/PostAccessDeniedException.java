@@ -1,5 +1,6 @@
 package com.community.trendingserviceapi.exception;
 
+import com.community.trendingserviceapi.dto.global.response.StatusCode;
 import org.springframework.http.HttpStatus;
 
 public class PostAccessDeniedException extends BusinessException {

@@ -1,6 +1,5 @@
-package com.community.trendingserviceapi.dto.post.response;
+package com.community.trendingserviceapi.dto.global.response;
 
-import com.community.trendingserviceapi.exception.StatusCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +18,10 @@ public record ApiResponse<T>(
 
     public static ApiResponse<Void> created() {
         return new ApiResponse<>(StatusCode.CREATED.getCode(), null, null);
+    }
+
+    public static ApiResponse<Void> accepted() {
+        return new ApiResponse<>(StatusCode.ACCEPTED.getCode(), null, null);
     }
 
     public static ApiResponse<Void> fail(StatusCode statusCode) {
