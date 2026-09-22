@@ -12,15 +12,16 @@ public class PostLikeJdbcRepository {
     /**
      *  좋아요 이력 저장
      *  @return 1이면 신규 좋아요, 0이면 이미 누른 상태
-     *  */
+     */
     public int insertLike(Long postId, Long userId) {
         return jdbcTemplate.update(
                 "INSERT IGNORE INTO post_like (post_id, user_id) VALUES (?, ?)",
                 postId, userId);
     }
 
-    /** 좋아요 이력 삭제
-    /** @return 1이면 실제 취소됨, 0이면 애초에 안 누른 상태
+    /**
+     * 좋아요 이력 삭제
+     * @return 1이면 실제 취소됨, 0이면 애초에 안 누른 상태
      */
     public int deleteLike(Long postId, Long userId) {
         return jdbcTemplate.update(

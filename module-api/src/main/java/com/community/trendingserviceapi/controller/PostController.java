@@ -1,20 +1,18 @@
 package com.community.trendingserviceapi.controller;
 
-import com.community.trendingserviceapi.domain.post.Post;
+import com.community.trendingserviceapi.domain.PostWithAccount;
+import com.community.trendingserviceapi.dto.global.response.ApiResponse;
 import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
 import com.community.trendingserviceapi.dto.post.request.PostUpdateRequest;
-import com.community.trendingserviceapi.dto.post.response.ApiResponse;
 import com.community.trendingserviceapi.dto.post.response.PostDetailResponse;
 import com.community.trendingserviceapi.dto.post.response.PostLikeResponse;
-import com.community.trendingserviceapi.dto.post.response.TrendingPostResponse;
 import com.community.trendingserviceapi.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import tools.jackson.databind.util.RawValue;
 
 @RestController
 @RequestMapping("/api/posts")
