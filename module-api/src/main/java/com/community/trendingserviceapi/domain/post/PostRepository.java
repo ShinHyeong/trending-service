@@ -1,7 +1,5 @@
 package com.community.trendingserviceapi.domain.post;
 
-import com.community.trendingserviceapi.dto.post.response.PostDetailResponse;
-import com.community.trendingserviceapi.dto.post.response.TrendingPostResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
