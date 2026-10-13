@@ -24,14 +24,15 @@ public class TrendingPostCacheRefresher {
 
     @Scheduled(cron = "0 */5 * * * *")
     @Transactional(readOnly = true)
-    public String refresh() {
+    public List<TrendingPostResponse> refresh() {
         List<Long> postIds = postRepository.findTrendingPostIds(TRENDING_POST_LIMIT);
 
         List<TrendingPostResponse> posts = postIds.isEmpty()
                 ? List.of()
                 : getTrendingPosts(postIds);
 
-        return trendingPostCacheRepository.save(posts);
+        trendingPostCacheRepository.save(posts);
+        return posts;
     }
 
     /**

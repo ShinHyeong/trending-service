@@ -6,13 +6,15 @@ import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
 import com.community.trendingserviceapi.dto.post.request.PostUpdateRequest;
 import com.community.trendingserviceapi.dto.post.response.PostDetailResponse;
 import com.community.trendingserviceapi.dto.post.response.PostLikeResponse;
+import com.community.trendingserviceapi.dto.post.response.TrendingPostResponse;
 import com.community.trendingserviceapi.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.util.RawValue;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -21,9 +23,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/trending")
-    public ResponseEntity<ApiResponse<RawValue>> getTrendingPosts() {
-        // data에 Redis에 캐싱된 값 그대로 리턴 : Jackson은 RawValue를 만나면 파싱하지 않고 문자열을 그대로 넣음
-        RawValue body = new RawValue(postService.getTrendingCacheJson());
+    public ResponseEntity<ApiResponse<List<TrendingPostResponse>>> getTrendingPosts() {
+        List<TrendingPostResponse> body = postService.getTrendingCache();
         return ResponseEntity.ok(ApiResponse.success(body));
     }
 
