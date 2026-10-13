@@ -27,9 +27,7 @@ public class TrendingPostCacheRefresher {
     public List<TrendingPostResponse> refresh() {
         List<Long> postIds = postRepository.findTrendingPostIds(TRENDING_POST_LIMIT);
 
-        List<TrendingPostResponse> posts = postIds.isEmpty()
-                ? List.of()
-                : getTrendingPosts(postIds);
+        List<TrendingPostResponse> posts = getTrendingPosts(postIds);
 
         trendingPostCacheRepository.save(posts);
         return posts;
