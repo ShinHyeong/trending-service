@@ -26,6 +26,7 @@ public class Post {
     @Column(nullable = false, length = 50)
     private String title;
 
+    @Column(nullable = false)
     private String content;
 
     private long viewCount;

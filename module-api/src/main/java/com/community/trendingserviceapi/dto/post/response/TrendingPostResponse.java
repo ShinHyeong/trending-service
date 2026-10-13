@@ -30,7 +30,6 @@ public record TrendingPostResponse(
     }
 
     private static String toPreview(String content){
-        if(content==null) { return ""; }
         return content.length() > PREVIEW_LENGTH
                 ? content.substring(0, PREVIEW_LENGTH)
                 : content;
