@@ -8,6 +8,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 import java.util.List;
@@ -31,7 +32,7 @@ public class TrendingPostCacheRepository {
 
     public Optional<List<TrendingPostResponse>> find() {
         String cachedJson = redisTemplate.opsForValue().get(TRENDING_POSTS_CACHE_KEY);
-        if (cachedJson == null || cachedJson.isBlank()) {
+        if (StringUtils.isBlank(cachedJson)) {
             return Optional.empty();
         }
         try {
