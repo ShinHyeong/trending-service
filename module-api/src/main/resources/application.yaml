@@ -18,10 +18,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false #부하테스트를 위해
     properties:
       hibernate:
         format_sql: true
+    open-in-view: false # 트랜잭션이 끝나면 커넥션을 풀에 바로 반환 (요청 끝까지 점유하지 않음)
 
   data:
     redis:
