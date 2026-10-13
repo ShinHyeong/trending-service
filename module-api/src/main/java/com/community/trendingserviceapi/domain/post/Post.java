@@ -1,16 +1,13 @@
 package com.community.trendingserviceapi.domain.post;
 
-import com.community.trendingserviceapi.dto.post.request.PostCreateRequest;
-import com.community.trendingserviceapi.dto.post.request.PostUpdateRequest;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -29,26 +26,28 @@ public class Post {
     @Column(nullable = false, length = 50)
     private String title;
 
+    @Column(nullable = false)
     private String content;
 
     private long viewCount;
     private long likeCount;
 
-    @CreationTimestamp
+    @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
 
-    public Post(Long userId, PostCreateRequest request) {
+    public Post(Long userId, String title, String content) {
         this.userId = userId;
-        this.title = request.title();
-        this.content = request.content();
+        this.title = title;
+        this.content = content;
     }
 
-    public void update(PostUpdateRequest request) {
-        this.title = request.title();
-        this.content = request.content();
-        this.updatedAt = LocalDateTime.now();
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 }

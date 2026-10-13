@@ -49,7 +49,7 @@ public class PostLikeBufferPublisher {
 
         List<PostLikeEvent> batchEvents = new ArrayList<>();
         PostLikeEvent event;
-        while (batchEvents.size() < BATCH_SIZE & (event = eventQueue.poll()) != null) {
+        while (batchEvents.size() < BATCH_SIZE && (event = eventQueue.poll()) != null) {
             batchEvents.add(event);
             queueSize.decrementAndGet();
         }
