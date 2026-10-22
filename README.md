@@ -13,7 +13,7 @@
 
 # 1. 기술스택
 
-Docker, MySQL 8.0.2, Java 21, Spring Boot 4.1
+Java 21, Spring Boot 4.1, MySQL, Redis, ElasticMQ, Docker
 
 # 2. 서비스 규모 가정
 
